@@ -3,6 +3,26 @@
 from random import randint
 from datetime import datetime
 
+class TooManyMelonsError(ValueError):
+    """Raises error for orders greater than 100 melons."""
+
+    def __init__(self):
+        """Initialize TooManyMelonsError using init method from ValueError"""
+
+        super(TooManyMelonsError, self).__init__("No more than 100 melons!")
+
+# Q: What are the advantages of creating a customized error as opposed to
+#    raising a generic Exception?
+
+# A: Gives you more information so it's easier to diagnose and fix the error.
+
+
+# Q: Why does it make sense for TooManyMelonsError to subclass ValueError?
+
+# A: Adheres to the principle of encapsulation. TooManyMelonsError is a type
+#    of ValueError.
+
+
 class AbstractMelonOrder(object):
     """An abstract class that other Melon Orders inherit from."""
     
@@ -10,6 +30,8 @@ class AbstractMelonOrder(object):
         """Initialize melon order attributes"""
 
         self.species = species
+        if qty > 100:
+            raise TooManyMelonsError
         self.qty = qty
         self.shipped = False
         self.order_type = order_type
@@ -21,17 +43,22 @@ class AbstractMelonOrder(object):
 
         base_price = self.splurge_factor
         
+        now = datetime.now()
+
+        if now.isoweekday <= 5 and now.hour >= 8 and now.hour <=11:
+            base_price += 4
+
     def get_total(self):
         """Calculate total price."""
 
-        base_price = get_base_price
+        base_price = self.get_base_price()
         
-        if self.species = "Christmas melon":
+        if self.species == "Christmas melon":
             base_price = base_price * 1.5      
       
         total = (1 + self.tax) * self.qty * base_price
 
-        if self.order_type = "international" and self.qty < 10:
+        if self.order_type == "international" and self.qty < 10:
             total += 3
 
         return total
